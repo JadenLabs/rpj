@@ -1,0 +1,10 @@
+#[derive(clap::Args)]
+pub struct Command {
+    pub arg: T,
+}
+
+impl Command {
+    pub fn handle(self) {
+        // ...
+    }
+}
