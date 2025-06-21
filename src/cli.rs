@@ -10,6 +10,9 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
+    #[command(aliases = &["i"], about = "Install a project to the system bins")]
+    Install(InstallCommand),
+
     #[command(aliases = &["c", "create", "init", "make"], about = "Create a new project")]
     New(NewCommand),
 

@@ -15,3 +15,6 @@ pub use export::ExportCommand;
 
 pub mod add;
 pub use add::AddCommand;
+
+pub mod install;
+pub use install::InstallCommand;

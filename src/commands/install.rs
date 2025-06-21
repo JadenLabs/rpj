@@ -1,0 +1,72 @@
+use dirs;
+use std::{fs, path::PathBuf, process::Command};
+
+const PROJ_NAME: &str = "rpj";
+
+#[derive(clap::Args)]
+pub struct InstallCommand {}
+
+impl InstallCommand {
+    pub fn handle(self) {
+        // Build the project
+        let build_status = Command::new("cargo")
+            .arg("build")
+            .arg("--release")
+            .status()
+            .expect("Failed to build the project");
+        if !build_status.success() {
+            eprintln!("Build failed. Please fix the errors and try again.");
+            return;
+        }
+
+        // Find exec name and target path
+        let exe_name = if cfg!(windows) {
+            format!("{}.exe", PROJ_NAME)
+        } else {
+            PROJ_NAME.to_string()
+        };
+        let exe_path = PathBuf::from("target").join("release").join(&exe_name);
+
+        // Get install directory using dirs
+        let mut install_dir = dirs::data_local_dir().expect("Could not find local data dir");
+        install_dir.push("rpj");
+        install_dir.push("bin");
+
+        // Create install dir if needed
+        fs::create_dir_all(&install_dir).expect("Failed to create install directory");
+
+        // Copy binary
+        let install_path = install_dir.join(exe_name);
+        fs::copy(&exe_path, &install_path).expect("Failed to copy binary");
+
+        println!("Installed to {}", install_path.display());
+
+        // Add to PATH - only windows for now
+        if cfg!(windows) {
+            add_to_path_windows(&install_dir);
+        } else {
+            // TODO add support for other platforms
+            todo!("Automatic PATH updating is not yet supported on this platform");
+        }
+    }
+}
+
+fn add_to_path_windows(dir: &PathBuf) {
+    let dir_str = dir.to_string_lossy();
+    let output = Command::new("powershell")
+        .args([
+            "-Command",
+            &format!(
+                "[Environment]::SetEnvironmentVariable('Path', $env:Path + ';{}', 'User')",
+                dir_str
+            ),
+        ])
+        .output()
+        .expect("Failed to update PATH");
+
+    if output.status.success() {
+        println!("Added '{}' to PATH (User)", dir_str);
+    } else {
+        eprintln!("Failed to add '{}' to PATH", dir_str);
+    }
+}
