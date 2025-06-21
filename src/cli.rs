@@ -22,6 +22,9 @@ pub enum Commands {
     // #[command(aliases = &["a", "import"], about = "Add an existing project)]
     // Add(AddCommand),
 
+    #[command(aliases = &["e"], about = "Export a project to a file")]
+    Export(ExportCommand),
+
     // #[command(aliases = &["l", "ls", "all"], about = "List all projects")]
     // List(ListCommand),
 
@@ -37,7 +40,7 @@ pub enum Commands {
     // #[command(aliases = &["open-dir", "file", "explore", "open"], about = "Open project in file explorer")]
     // Explorer(ExplorerCommand),
 
-    // Debug(DebugCommand),
+    Debug(DebugCommand),
 
     // #[command(about = "Get the path of a project")]
     // Path(PathCommand),

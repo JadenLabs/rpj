@@ -6,3 +6,9 @@ pub use remove::RemoveCommand;
 
 pub mod update;
 pub use update::UpdateCommand;
+
+pub mod debug;
+pub use debug::DebugCommand;
+
+pub mod export;
+pub use export::ExportCommand;

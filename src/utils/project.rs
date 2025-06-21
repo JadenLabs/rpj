@@ -12,6 +12,19 @@ pub struct Project {
     pub description: Option<String>,
 }
 
+impl Project {
+    pub fn save(&self, path: &PathBuf) {
+        let projects = load_projects(path);
+        let mut projects: Vec<Project> = projects
+            .into_iter()
+            .filter(|p| p.name != self.name) // Remove existing project with the same name
+            .collect();
+
+        projects.push(self.clone());
+        save_projects(path, &projects);
+    }
+}
+
 /// Function to get the path to the RPJ store
 pub fn get_store_path() -> PathBuf {
     // Get the dir for the user's local data
@@ -21,6 +34,11 @@ pub fn get_store_path() -> PathBuf {
     // Create the directory if it doesn't exist
     fs::create_dir_all(path.parent().unwrap())
         .expect("Failed to create directory for projects.json");
+
+    // Make sure the file exists
+    if !path.exists() {
+        fs::write(&path, "[]").expect("Failed to create projects.json file");
+    }
 
     path
 }
@@ -72,8 +90,8 @@ pub fn project_exists(
     ProjectExistsResult::DoesNotExist
 }
 
-// /// Get project by name from the store
-// pub fn get_project_by_name(path: &PathBuf, project_name: &str) -> Option<Project> {
-//     let projects = load_projects(path);
-//     projects.into_iter().find(|p| p.name == project_name)
-// }
+/// Get project by name from the store
+pub fn get_project_by_name(path: &PathBuf, project_name: &str) -> Option<Project> {
+    let projects = load_projects(path);
+    projects.into_iter().find(|p| p.name == project_name)
+}
