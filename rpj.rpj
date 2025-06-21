@@ -1,7 +1,0 @@
-{
-  "name": "rpj",
-  "directory": "",
-  "run_cmd": "rpj help",
-  "gh_url": "https://github.com/jadenlabs/rpj",
-  "description": "The Rust port of the RProj project management tool"
-}

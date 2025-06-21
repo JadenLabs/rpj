@@ -14,5 +14,6 @@ fn main() {
         Commands::Update(cmd) => cmd.handle(),
         Commands::Debug(cmd) => cmd.handle(),
         Commands::Export(cmd) => cmd.handle(),
+        Commands::Add(cmd) => cmd.handle(),
     }
 }

@@ -19,8 +19,8 @@ pub enum Commands {
     #[command(aliases = &["u"], about = "Update an existing project")]
     Update(UpdateCommand),
 
-    // #[command(aliases = &["a", "import"], about = "Add an existing project)]
-    // Add(AddCommand),
+    #[command(aliases = &["a", "import"], about = "Add an existing project")]
+    Add(AddCommand),
 
     #[command(aliases = &["e"], about = "Export a project to a file")]
     Export(ExportCommand),

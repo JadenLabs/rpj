@@ -12,3 +12,6 @@ pub use debug::DebugCommand;
 
 pub mod export;
 pub use export::ExportCommand;
+
+pub mod add;
+pub use add::AddCommand;
