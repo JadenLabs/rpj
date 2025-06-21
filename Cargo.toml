@@ -2,6 +2,13 @@
 name = "rpj"
 version = "0.1.0"
 edition = "2024"
+authors = ["JadenLabs <jadenlabssocial@outlook.com>"]
+description = "A project management CLI tool for quick manipulation of projects"
+license = "MIT"
+repository = "https://github.com/jadenlabs/rpj"
+readme = "README.md"
+categories = ["command-line-utilities"]
+keywords = ["cli", "project management", "productivity"]
 
 [dependencies]
 clap = { version = "4.5.40", features = ["derive"] }
