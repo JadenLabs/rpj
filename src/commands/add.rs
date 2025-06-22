@@ -1,6 +1,7 @@
 use crate::utils::{
-    get_store_path, load_projects, project_exists, save_projects, Project, ProjectExistsResult,
+    Project, ProjectExistsResult, get_store_path, load_projects, project_exists, save_projects,
 };
+use colored::Colorize;
 use std::fs;
 use std::path::PathBuf;
 
@@ -20,12 +21,36 @@ pub struct AddCommand {
 impl AddCommand {
     pub fn handle(self) {
         // Parse the path to the .rpj file
-        let path = PathBuf::from(&self.path)
+        let mut path = PathBuf::from(&self.path)
             .canonicalize()
-            .expect("Failed to canonicalize the path");
+            .expect(format!("{} Failed to parse path", "✖".red()).as_str());
         if !path.exists() {
-            eprintln!("The specified path '{}' does not exist!", self.path);
+            eprintln!(
+                "{} The specified path '{}' does not exist!",
+                "✖".red(),
+                self.path
+            );
             return;
+        }
+
+        match fs::read_dir(&path) {
+            Ok(entries) => {
+                for entry in entries.flatten() {
+                    let file_path = entry.path();
+                    if file_path.extension().map_or(false, |ext| ext == "rpj") {
+                        println!(
+                            "Found .rpj file: {}",
+                            file_path.display().to_string().green(),
+                        );
+                        path = file_path;
+                        break;
+                    }
+                }
+            }
+            Err(err) => {
+                eprintln!("Failed to read the directory '{}': {}", path.display(), err);
+                return;
+            }
         }
 
         // Read the .rpj file
