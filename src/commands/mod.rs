@@ -18,3 +18,6 @@ pub use add::AddCommand;
 
 pub mod install;
 pub use install::InstallCommand;
+
+pub mod list;
+pub use list::ListCommand;

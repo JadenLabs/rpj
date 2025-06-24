@@ -28,8 +28,8 @@ pub enum Commands {
     #[command(aliases = &["e"], about = "Export a project to a file")]
     Export(ExportCommand),
 
-    // #[command(aliases = &["l", "ls", "all"], about = "List all projects")]
-    // List(ListCommand),
+    #[command(aliases = &["l", "ls", "all"], about = "List all projects")]
+    List(ListCommand),
 
     // #[command(aliases = &["g", "search", "find", "info"], about = "Get information about a project")]
     // Get(GetCommand),
