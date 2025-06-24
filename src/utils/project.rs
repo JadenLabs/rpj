@@ -1,5 +1,4 @@
 use dirs;
-use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
