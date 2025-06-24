@@ -1,6 +1,7 @@
 use crate::utils::{
-    get_store_path, load_projects, project_exists, save_projects, Project, ProjectExistsResult,
+    Project, ProjectExistsResult, get_store_path, load_projects, project_exists, save_projects,
 };
+use colored::Colorize;
 use std::path::PathBuf;
 
 #[derive(clap::Args)]
@@ -16,29 +17,35 @@ pub struct NewCommand {
 }
 
 impl NewCommand {
-    pub fn handle(self) {
+    pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         // Get the RPJ store path
         let store_path = get_store_path();
-        println!("DEBUG: RPJ store path: {:?}", store_path);
 
         // Check if the project already exists in the RPJ store
         let project_path = PathBuf::from(&self.directory);
         let project_canon_path = project_path
-                .canonicalize()
-                .expect("Failed to canonicalize project path")
-                .to_string_lossy()
-                .to_string();
+            .canonicalize()
+            .map_err(|e| {
+                format!(
+                    "Failed to parse path '{}': {}",
+                    &self.directory,
+                    e.to_string().dimmed()
+                )
+            })?
+            .to_string_lossy()
+            .to_string();
         match project_exists(&store_path, &self.name.as_str(), Some(&project_path)) {
             ProjectExistsResult::ExistsByName => {
-                eprintln!("Project '{}' already exists in the RPJ store!", self.name);
-                return;
+                return Err(
+                    format!("Project '{}' already exists in the RPJ store!", self.name).into(),
+                );
             }
             ProjectExistsResult::ExistsByDirectory => {
-                eprintln!(
+                return Err(format!(
                     "Project path '{}' already exists in the RPJ store!",
-                    project_canon_path
-                );
-                return;
+                    self.directory
+                )
+                .into());
             }
             ProjectExistsResult::DoesNotExist => {
                 println!(
@@ -65,5 +72,7 @@ impl NewCommand {
         save_projects(&store_path, &projects);
 
         println!("Project '{}' has been created.", self.name);
+
+        Ok(())
     }
 }

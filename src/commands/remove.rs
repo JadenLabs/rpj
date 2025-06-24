@@ -1,5 +1,5 @@
 use crate::utils::{
-    get_store_path, load_projects, project_exists, save_projects, ProjectExistsResult,
+    ProjectExistsResult, get_store_path, load_projects, project_exists, save_projects,
 };
 
 #[derive(clap::Args)]
@@ -8,7 +8,7 @@ pub struct RemoveCommand {
 }
 
 impl RemoveCommand {
-    pub fn handle(self) {
+    pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         // Get the RPJ store path
         let store_path = get_store_path();
         println!("DEBUG: RPJ store path: {:?}", store_path);
@@ -16,8 +16,11 @@ impl RemoveCommand {
         // Get the project
         match project_exists(&store_path, &self.name, None) {
             ProjectExistsResult::DoesNotExist => {
-                eprintln!("Project '{}' does not exist in the RPJ store!", self.name);
-                return;
+                return Err(format!(
+                    "Project '{}' does not exist in the RPJ store!",
+                    self.name
+                )
+                .into());
             }
             _ => {
                 println!("Deleting project '{}'", self.name);
@@ -34,5 +37,7 @@ impl RemoveCommand {
         save_projects(&store_path, &projects);
 
         println!("Project '{}' has been deleted.", self.name);
+
+        Ok(())
     }
 }

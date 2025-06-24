@@ -6,15 +6,17 @@ pub struct DebugCommand {
 }
 
 impl DebugCommand {
-    pub fn handle(self) {
+    pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         // Get the RPJ store path
         let store_path = get_store_path();
         println!(
             "RPJ Store Path: {}",
             store_path
                 .canonicalize()
-                .expect("Failed to format store path string")
+                .map_err(|_| "Failed to canonicalize path")?
                 .to_string_lossy()
         );
+
+        Ok(())
     }
 }

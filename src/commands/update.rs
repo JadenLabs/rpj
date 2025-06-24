@@ -14,28 +14,20 @@ pub struct UpdateCommand {
 }
 
 impl UpdateCommand {
-    pub fn handle(self) {
+    pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         if self.directory.is_none()
             && self.run_cmd.is_none()
             && self.gh_url.is_none()
             && self.description.is_none()
         {
-            eprintln!("No fields provided to update.");
-            return;
+            return Err("No fields provided to update.".into());
         }
         println!("Updating project: {}", self.name);
 
-        // Get the RPJ store path
+        // Get the RPJ store path and the project
         let store_path = get_store_path();
+        let mut project = get_project_by_name(&store_path, &self.name)?;
 
-        // Get the project
-        let project_res = get_project_by_name(&store_path, &self.name);
-        if project_res.is_none() {
-            eprintln!("Project '{}' does not exist in the RPJ store!", self.name);
-            return;
-        }
-
-        let mut project = project_res.unwrap();
         // Update the project fields
         if let Some(directory) = self.directory {
             println!("Updating directory to: {}", &directory);
@@ -55,6 +47,8 @@ impl UpdateCommand {
         }
 
         // Save the updated project back to the RPJ store
-        project.save(&store_path)
+        project.save(&store_path);
+
+        Ok(())
     }
 }

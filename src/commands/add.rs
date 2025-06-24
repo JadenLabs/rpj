@@ -19,47 +19,64 @@ pub struct AddCommand {
 }
 
 impl AddCommand {
-    pub fn handle(self) {
+    pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         // Parse the path to the .rpj file
-        let mut path = PathBuf::from(&self.path)
-            .canonicalize()
-            .expect(format!("{} Failed to parse path", "✖".red()).as_str());
+        let mut path = PathBuf::from(&self.path).canonicalize().map_err(|e| {
+            format!(
+                "Failed to parse path '{}': {}",
+                self.path,
+                e.to_string().dimmed()
+            )
+        })?;
+
         if !path.exists() {
-            eprintln!(
-                "{} The specified path '{}' does not exist!",
-                "✖".red(),
-                self.path
-            );
-            return;
+            return Err(format!("The specified path '{}' does not exist!", self.path).into());
         }
 
-        match fs::read_dir(&path) {
-            Ok(entries) => {
-                for entry in entries.flatten() {
-                    let file_path = entry.path();
-                    if file_path.extension().map_or(false, |ext| ext == "rpj") {
-                        println!(
-                            "Found .rpj file: {}",
-                            file_path.display().to_string().green(),
-                        );
-                        path = file_path;
-                        break;
-                    }
+        // If directory, look for .rpj file
+        if path.is_dir() {
+            println!(
+                "{} Searching for .rpj file in directory: {}",
+                "ℹ".blue(),
+                path.display().to_string().green(),
+            );
+
+            let entries = fs::read_dir(&path).map_err(|e| {
+                format!(
+                    "Failed to read the directory '{}': {}",
+                    path.display(),
+                    e.to_string().dimmed()
+                )
+            })?;
+
+            let mut found_path: Option<PathBuf> = None;
+
+            for entry in entries.flatten() {
+                let file_path = entry.path();
+                if file_path.extension().map_or(false, |ext| ext == "rpj") {
+                    println!(
+                        "{} Found .rpj file: {}",
+                        "ℹ".blue(),
+                        file_path.display().to_string().green(),
+                    );
+                    found_path = Some(file_path);
+                    break;
                 }
             }
-            Err(err) => {
-                eprintln!("Failed to read the directory '{}': {}", path.display(), err);
-                return;
-            }
+
+            path = found_path
+                .ok_or_else(|| format!("No .rpj file found in directory '{}'", self.path))?;
         }
 
         // Read the .rpj file
-        let data = fs::read_to_string(&path).expect("Failed to read the .rpj file");
-        let mut project: Project =
-            serde_json::from_str(&data).expect("Failed to parse the .rpj file");
+        let data = fs::read_to_string(&path)
+            .map_err(|e| format!("Failed to read the .rpj file: {}", e.to_string().dimmed()))?;
+        let mut project: Project = serde_json::from_str(&data)
+            .map_err(|e| format!("Failed to parse the .rpj file: {}", e))?;
+
         project.directory = path
             .parent()
-            .expect("Failed to get the parent directory of the .rpj file")
+            .ok_or("Failed to get the parent directory of the .rpj file")?
             .to_string_lossy()
             .to_string();
 
@@ -76,11 +93,11 @@ impl AddCommand {
                     projects.retain(|p| p.name != project.name);
                     save_projects(&store_path, &projects);
                 } else {
-                    eprintln!(
-                        "Project '{}' already exists in the RPJ store! Use --force to overwrite it.",
-                        project.name
-                    );
-                    return;
+                    return Err(format!(
+                        "Project '{}' already exists in the RPJ store! Use {} to overwrite it.",
+                        project.name,
+                        "--force".green(),
+                    ).into());
                 }
             }
             _ => {}
@@ -98,14 +115,15 @@ impl AddCommand {
 
         // Optionally delete the .rpj file
         if self.delete_after {
-            if fs::remove_file(&path).is_err() {
-                eprintln!(
+            match fs::remove_file(&path) {
+                Ok(_) => println!("Deleted the .rpj file at '{}'.", path.to_string_lossy()),
+                Err(_) => eprintln!(
                     "Failed to delete the .rpj file at '{}'. Please delete it manually.",
                     path.to_string_lossy()
-                );
-            } else {
-                println!("Deleted the .rpj file at '{}'.", path.to_string_lossy());
+                ),
             }
         }
+
+        Ok(())
     }
 }
