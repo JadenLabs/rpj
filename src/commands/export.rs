@@ -1,4 +1,5 @@
 use crate::utils::{get_project_by_name, get_store_path};
+use colored::Colorize;
 use std::env;
 use std::fs;
 use std::path::PathBuf;
@@ -25,13 +26,13 @@ impl ExportCommand {
         // Export the project to a file
         let parent_dir = match self.export_path {
             Some(path) => PathBuf::from(path),
-            None => env::current_dir()
-                .map_err(|_| "Failed to get current directory")?,
+            None => env::current_dir().map_err(|_| "Failed to get current directory")?,
         };
         println!(
-            "Exporting project '{}' to directory '{}'",
-            &project.name,
-            parent_dir.to_string_lossy()
+            "{} Exporting {} to directory {}",
+            "ℹ".blue(),
+            &project.name.to_string().blue(),
+            parent_dir.to_string_lossy().dimmed()
         );
 
         let export_path = parent_dir.join(format!("{}.rpj", &project.name));
@@ -46,6 +47,14 @@ impl ExportCommand {
                 export_path.to_string_lossy()
             )
         })?;
+
+        println!(
+            "{} {} {} {}",
+            "✔ Project".green(),
+            &project.name.to_string().blue(),
+            "exported to".green(),
+            export_path.to_string_lossy().dimmed(),
+        );
 
         Ok(())
     }

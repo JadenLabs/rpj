@@ -23,29 +23,27 @@ impl AddCommand {
         // Parse the path to the .rpj file
         let mut path = PathBuf::from(&self.path).canonicalize().map_err(|e| {
             format!(
-                "Failed to parse path '{}': {}",
-                self.path,
-                e.to_string().dimmed()
+                "Failed to parse path {}: {}",
+                self.path.to_string().dimmed(),
+                e.to_string().red()
             )
         })?;
 
         if !path.exists() {
-            return Err(format!("The specified path '{}' does not exist!", self.path).into());
+            return Err(format!(
+                "The path {} does not exist!",
+                self.path.to_string().dimmed()
+            )
+            .into());
         }
 
         // If directory, look for .rpj file
         if path.is_dir() {
-            println!(
-                "{} Searching for .rpj file in directory: {}",
-                "ℹ".blue(),
-                path.display().to_string().green(),
-            );
-
             let entries = fs::read_dir(&path).map_err(|e| {
                 format!(
-                    "Failed to read the directory '{}': {}",
-                    path.display(),
-                    e.to_string().dimmed()
+                    "Failed to read the directory {}: {}",
+                    path.to_string_lossy().dimmed(),
+                    e.to_string().red()
                 )
             })?;
 
@@ -57,22 +55,23 @@ impl AddCommand {
                     println!(
                         "{} Found .rpj file: {}",
                         "ℹ".blue(),
-                        file_path.display().to_string().green(),
+                        file_path.display().to_string().dimmed(),
                     );
                     found_path = Some(file_path);
                     break;
                 }
             }
 
-            path = found_path
-                .ok_or_else(|| format!("No .rpj file found in directory '{}'", self.path))?;
+            path = found_path.ok_or_else(|| {
+                format!("No .rpj file found in directory {}", self.path.to_string())
+            })?;
         }
 
         // Read the .rpj file
         let data = fs::read_to_string(&path)
             .map_err(|e| format!("Failed to read the .rpj file: {}", e.to_string().dimmed()))?;
         let mut project: Project = serde_json::from_str(&data)
-            .map_err(|e| format!("Failed to parse the .rpj file: {}", e))?;
+            .map_err(|e| format!("Failed to parse the .rpj file: {}", e.to_string().dimmed()))?;
 
         project.directory = path
             .parent()
@@ -85,19 +84,16 @@ impl AddCommand {
         match project_exists(&store_path, &project.name, None) {
             ProjectExistsResult::ExistsByName => {
                 if self.force {
-                    println!(
-                        "Project '{}' already exists in the RPJ store! Removing it first.",
-                        project.name
-                    );
                     let mut projects = load_projects(&store_path);
                     projects.retain(|p| p.name != project.name);
                     save_projects(&store_path, &projects);
                 } else {
                     return Err(format!(
-                        "Project '{}' already exists in the RPJ store! Use {} to overwrite it.",
-                        project.name,
+                        "Project {} already exists! Use {} to overwrite it.",
+                        project.name.blue(),
                         "--force".green(),
-                    ).into());
+                    )
+                    .into());
                 }
             }
             _ => {}
@@ -108,10 +104,7 @@ impl AddCommand {
         projects.push(project.clone());
         save_projects(&store_path, &projects);
 
-        println!(
-            "Project '{}' has been successfully added to the RPJ store!",
-            project.name
-        );
+        println!("{} {}", "✔ Successfully added".green(), project.name.blue());
 
         // Optionally delete the .rpj file
         if self.delete_after {
