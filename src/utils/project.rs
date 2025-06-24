@@ -1,4 +1,5 @@
 use dirs;
+use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
@@ -91,7 +92,12 @@ pub fn project_exists(
 }
 
 /// Get project by name from the store
-pub fn get_project_by_name(path: &PathBuf, project_name: &str) -> Option<Project> {
+pub fn get_project_by_name(path: &PathBuf, project_name: &str) -> Result<Project, Box<dyn std::error::Error>> {
     let projects = load_projects(path);
-    projects.into_iter().find(|p| p.name == project_name)
+    let res = projects.into_iter().find(|p| p.name == project_name);
+
+    match res {
+        Some(project) => Ok(project),
+        None => Err(format!("{} Project '{}' not found", "✖".red(), project_name).into()),
+    }
 }

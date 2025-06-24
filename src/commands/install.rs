@@ -7,16 +7,15 @@ const PROJ_NAME: &str = "rpj";
 pub struct InstallCommand {}
 
 impl InstallCommand {
-    pub fn handle(self) {
+    pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         // Build the project
         let build_status = Command::new("cargo")
             .arg("build")
             .arg("--release")
             .status()
-            .expect("Failed to build the project");
+            .map_err(|_| "Failed to build the project")?;
         if !build_status.success() {
-            eprintln!("Build failed. Please fix the errors and try again.");
-            return;
+            return Err("Cargo build failed".into());
         }
 
         // Find exec name and target path
@@ -28,12 +27,15 @@ impl InstallCommand {
         let exe_path = PathBuf::from("target").join("release").join(&exe_name);
 
         // Get install directory using dirs
-        let mut install_dir = dirs::data_local_dir().expect("Could not find local data dir");
+        let mut install_dir =
+            dirs::data_local_dir().ok_or_else(|| -> Box<dyn std::error::Error> {
+                "Could not find local data dir".into()
+            })?;
         install_dir.push("rpj");
         install_dir.push("bin");
 
         // Create install dir if needed
-        fs::create_dir_all(&install_dir).expect("Failed to create install directory");
+        fs::create_dir_all(&install_dir).map_err(|_| "Failed to create install directory")?;
 
         // Copy binary
         let install_path = install_dir.join(exe_name);
@@ -43,15 +45,17 @@ impl InstallCommand {
 
         // Add to PATH - only windows for now
         if cfg!(windows) {
-            add_to_path_windows(&install_dir);
+            add_to_path_windows(&install_dir)?;
         } else {
             // TODO add support for other platforms
             todo!("Automatic PATH updating is not yet supported on this platform");
         }
+
+        Ok(())
     }
 }
 
-fn add_to_path_windows(dir: &PathBuf) {
+fn add_to_path_windows(dir: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     let dir_str = dir.to_string_lossy();
     let output = Command::new("powershell")
         .args([
@@ -62,11 +66,16 @@ fn add_to_path_windows(dir: &PathBuf) {
             ),
         ])
         .output()
-        .expect("Failed to update PATH");
+        .map_err(|_| "Failed to update PATH")?;
 
     if output.status.success() {
         println!("Added '{}' to PATH (User)", dir_str);
+        Ok(())
     } else {
-        eprintln!("Failed to add '{}' to PATH", dir_str);
+        Err(format!(
+            "Failed to update PATH: {}",
+            String::from_utf8_lossy(&output.stderr)
+        )
+        .into())
     }
 }
