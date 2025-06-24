@@ -11,6 +11,7 @@ categories = ["command-line-utilities"]
 keywords = ["cli", "productivity"]
 
 [dependencies]
+assert_cmd = "2.0.17"
 clap = { version = "4.5.40", features = ["derive"] }
 colored = "3.0.0"
 dirs = "6.0.0"
