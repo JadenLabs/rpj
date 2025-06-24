@@ -1,39 +1,112 @@
-name: Release
+name: tagged-release
 
 on:
-  release:
-    types: [published]
+    push:
+        tags:
+            - "v*"
+
+env:
+    BIN_NAME: rpj
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    create-release:
+        name: create-release
+        runs-on: ubuntu-latest
+        outputs:
+            upload_url: ${{ steps.release.outputs.upload_url }}
+            release_version: ${{ steps.release.outputs.automatic_releases_tag }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 1
 
-    steps:
-      - uses: actions/checkout@v3
+            - name: Create GitHub release
+              id: release
+              uses: marvinpinto/action-automatic-releases@latest
+              with:
+                  repo_token: "${{ secrets.GITHUB_TOKEN }}"
+                  prerelease: false
 
-      - name: Set up Rust
-        uses: actions/setup-rust@v1
-        with:
-          rust-version: stable
+    build-release:
+        name: build-release
+        needs: create-release
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - build: linux
+                      os: ubuntu-latest
+                      rust: stable
+                      target: x86_64-unknown-linux-gnu
+                    - build: macos
+                      os: macos-latest
+                      rust: stable
+                      target: x86_64-apple-darwin
+                    - build: win-msvc
+                      os: windows-2019
+                      rust: stable
+                      target: x86_64-pc-windows-msvc
+        runs-on: ${{ matrix.os }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 1
 
-      - name: Install cross
-        run: cargo install cross
+            - name: Install Rust
+              uses: rust-lang/setup-rust@v1
+              with:
+                  rust-version: ${{ matrix.rust }}
+                  target: ${{ matrix.target }}
 
-      - name: Build Linux binary
-        run: cross build --release --target x86_64-unknown-linux-gnu
+            - name: Test
+              run: cargo test --target ${{ matrix.target }}
 
-      - name: Build macOS binary
-        run: cross build --release --target x86_64-apple-darwin
+            - name: Build release binary
+              run: cargo build --target ${{ matrix.target }} --verbose --release --bin ${{ env.BIN_NAME }}
 
-      - name: Build Windows binary
-        run: cross build --release --target x86_64-pc-windows-gnu
+            - name: Build archive
+              shell: bash
+              run: |
+                  outdir="./target/${{ matrix.target }}/release"
+                  staging="${{ env.BIN_NAME }}-${{ needs.create-release.outputs.release_version }}-${{ matrix.target }}"
+                  mkdir -p "$staging"
+                  cp README.md LICENSE "$staging/"
+                  if [[ "${{ matrix.os }}" == windows* ]]; then
+                    cp "$outdir/${{ env.BIN_NAME }}.exe" "$staging/"
+                    7z a "../$staging.zip" "$staging"
+                    echo "ASSET=$staging.zip" >> $GITHUB_ENV
+                  else
+                    cp "$outdir/${{ env.BIN_NAME }}" "$staging/"
+                    tar czf "../$staging.tar.gz" -C "$staging" .
+                    echo "ASSET=$staging.tar.gz" >> $GITHUB_ENV
+                  fi
 
-      - name: Upload binaries to GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            target/x86_64-unknown-linux-gnu/release/rpj
-            target/x86_64-apple-darwin/release/rpj
-            target/x86_64-pc-windows-gnu/release/rpj.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Upload release archive
+              uses: actions/upload-release-asset@v1.0.2
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ needs.create-release.outputs.upload_url }}
+                  asset_path: ${{ env.ASSET }}
+                  asset_name: ${{ env.ASSET }}
+                  asset_content_type: application/octet-stream
+
+    publish-release:
+        name: publish-release
+        runs-on: ubuntu-latest
+        needs: create-release
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 1
+
+            - name: Install Rust
+              uses: rust-lang/setup-rust@v1
+              with:
+                  rust-version: stable
+
+            - name: Publish to crates.io
+              run: cargo publish --token ${{ secrets.CARGO_TOKEN }}
