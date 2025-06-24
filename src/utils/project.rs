@@ -98,6 +98,6 @@ pub fn get_project_by_name(path: &PathBuf, project_name: &str) -> Result<Project
 
     match res {
         Some(project) => Ok(project),
-        None => Err(format!("{} Project '{}' not found", "✖".red(), project_name).into()),
+        None => Err(format!("Project '{}' not found", project_name).into()),
     }
 }
