@@ -17,7 +17,7 @@ impl Project {
         let projects = load_projects(path);
         let mut projects: Vec<Project> = projects
             .into_iter()
-            .filter(|p| p.name != self.name) // Remove existing project with the same name
+            .filter(|p| p.name != self.name)
             .collect();
 
         projects.push(self.clone());
