@@ -57,12 +57,6 @@ jobs:
               with:
                   fetch-depth: 1
 
-            - name: Install Rust
-              uses: rust-lang/setup-rust@v1
-              with:
-                  rust-version: ${{ matrix.rust }}
-                  target: ${{ matrix.target }}
-
             - name: Test
               run: cargo test --target ${{ matrix.target }}
 
