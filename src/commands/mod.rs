@@ -21,3 +21,6 @@ pub use install::InstallCommand;
 
 pub mod list;
 pub use list::ListCommand;
+
+pub mod get;
+pub use get::GetCommand;

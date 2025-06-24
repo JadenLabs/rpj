@@ -31,8 +31,8 @@ pub enum Commands {
     #[command(aliases = &["l", "ls", "all"], about = "List all projects")]
     List(ListCommand),
 
-    // #[command(aliases = &["g", "search", "find", "info"], about = "Get information about a project")]
-    // Get(GetCommand),
+    #[command(aliases = &["g", "search", "find", "info"], about = "Get information about a project")]
+    Get(GetCommand),
 
     // #[command(aliases = &["vsc", "edit"], about = "Open project in VS Code")]
     // Code(CodeCommand),
