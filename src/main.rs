@@ -24,6 +24,7 @@ fn main() {
         Commands::Add(cmd) => cmd.handle(),
         Commands::Install(cmd) => cmd.handle(),
         Commands::List(cmd) => cmd.handle(),
+        Commands::Get(cmd) => cmd.handle(),
     };
 
     if let Err(e) = res {
