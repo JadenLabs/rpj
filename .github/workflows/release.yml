@@ -67,18 +67,20 @@ jobs:
               shell: bash
               run: |
                   outdir="./target/${{ matrix.target }}/release"
-                  staging="${{ env.BIN_NAME }}-${{ needs.create-release.outputs.release_version }}-${{ matrix.target }}"
+                  version="${{ needs.create-release.outputs.release_version }}"
+                  staging="${{ env.BIN_NAME }}-${version}-${{ matrix.target }}"
+                  archive="${staging}${{ matrix.os == 'windows-latest' && '.zip' || '.tar.gz' }}"
+
                   mkdir -p "$staging"
                   cp README.md LICENSE "$staging/"
                   if [[ "${{ matrix.os }}" == windows* ]]; then
                     cp "$outdir/${{ env.BIN_NAME }}.exe" "$staging/"
-                    7z a "../$staging.zip" "$staging"
-                    echo "ASSET=$staging.zip" >> $GITHUB_ENV
+                    7z a "$archive" "$staging"
                   else
                     cp "$outdir/${{ env.BIN_NAME }}" "$staging/"
-                    tar czf "../$staging.tar.gz" -C "$staging" .
-                    echo "ASSET=$staging.tar.gz" >> $GITHUB_ENV
+                    tar czf "$archive" -C "$staging" .
                   fi
+                  echo "ASSET=$archive" >> $GITHUB_ENV
 
             - name: Upload release archive
               uses: actions/upload-release-asset@v1.0.2
