@@ -22,7 +22,10 @@ This is the rust port of my [RProj tool](https://github.com/JadenLabs/rproj) mad
 -   Cargo
 
 #### With cargo
-**TO BE IMPLEMENTED**
+1. Install with cargo
+   ```bash
+   cargo install rpj
+   ```
 
 #### With cli
 1. Clone the project
