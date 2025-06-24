@@ -24,3 +24,6 @@ pub use list::ListCommand;
 
 pub mod get;
 pub use get::GetCommand;
+
+pub mod code;
+pub use code::CodeCommand;
