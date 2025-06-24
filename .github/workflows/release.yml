@@ -100,10 +100,5 @@ jobs:
               with:
                   fetch-depth: 1
 
-            - name: Install Rust
-              uses: rust-lang/setup-rust@v1
-              with:
-                  rust-version: stable
-
             - name: Publish to crates.io
               run: cargo publish --token ${{ secrets.CARGO_TOKEN }}
