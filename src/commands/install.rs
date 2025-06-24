@@ -1,3 +1,4 @@
+use colored::Colorize;
 use dirs;
 use std::{fs, path::PathBuf, process::Command};
 
@@ -41,7 +42,11 @@ impl InstallCommand {
         let install_path = install_dir.join(exe_name);
         fs::copy(&exe_path, &install_path).expect("Failed to copy binary");
 
-        println!("Installed to {}", install_path.display());
+        println!(
+            "{} {}",
+            "✔ Installed to".green(),
+            install_path.to_string_lossy().dimmed()
+        );
 
         // Add to PATH - only windows for now
         if cfg!(windows) {
@@ -69,7 +74,12 @@ fn add_to_path_windows(dir: &PathBuf) -> Result<(), Box<dyn std::error::Error>> 
         .map_err(|_| "Failed to update PATH")?;
 
     if output.status.success() {
-        println!("Added '{}' to PATH (User)", dir_str);
+        println!(
+            "{} {} {}",
+            "✔ Added".green(),
+            dir_str.dimmed(),
+            "to user PATH".green()
+        );
         Ok(())
     } else {
         Err(format!(
