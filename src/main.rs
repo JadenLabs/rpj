@@ -7,6 +7,12 @@ use cli::{Cli, Commands};
 use colored::Colorize;
 
 fn main() {
+    // catch the cli parsing if it fails
+    if let Err(e) = Cli::try_parse() {
+        eprintln!("{}\n{}", e, "✖ Command parsing failed".red());
+        return;
+    }
+
     let cli = Cli::parse();
 
     let res: Result<(), Box<dyn std::error::Error>> = match cli.command {
