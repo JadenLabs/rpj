@@ -66,3 +66,18 @@ fn test_export_and_add() {
     remove_project("test_export_add");
     fs::remove_dir("./tests/export_add").unwrap();
 }
+
+#[test]
+fn test_list_and_get() {
+    fs::create_dir_all("./tests/list_get").unwrap();
+    new_project("test_list_get", "./tests/list_get");
+
+    let mut list_cmd = Command::cargo_bin("rpj").unwrap();
+    list_cmd.arg("list").assert().success();
+
+    let mut get_cmd = Command::cargo_bin("rpj").unwrap();
+    get_cmd.arg("get").arg("test_list_get").assert().success();
+
+    remove_project("test_list_get");
+    fs::remove_dir("./tests/list_get").unwrap();
+}
