@@ -40,7 +40,7 @@ impl InstallCommand {
 
         // Copy binary
         let install_path = install_dir.join(exe_name);
-        fs::copy(&exe_path, &install_path).expect("Failed to copy binary");
+        fs::copy(&exe_path, &install_path).map_err(|_| "Failed to copy binary")?;
 
         println!(
             "{} {}",
