@@ -47,12 +47,7 @@ impl NewCommand {
                 )
                 .into());
             }
-            ProjectExistsResult::DoesNotExist => {
-                println!(
-                    "Creating new project '{}' in directory '{}'",
-                    self.name, self.directory
-                );
-            }
+            _ => {}
         }
 
         // Create a new project instance
@@ -66,12 +61,16 @@ impl NewCommand {
 
         // Load existing projects from the RPJ store
         let mut projects = load_projects(&store_path);
-        // println!("DEBUG: Loaded projects: {:?}", projects);
 
         projects.push(project);
         save_projects(&store_path, &projects);
 
-        println!("Project '{}' has been created.", self.name);
+        println!(
+            "{} {} {}",
+            "✔ Project".green(),
+            self.name.blue(),
+            "has been created".green()
+        );
 
         Ok(())
     }

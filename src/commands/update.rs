@@ -1,4 +1,5 @@
 use crate::utils::{get_project_by_name, get_store_path};
+use colored::Colorize;
 
 #[derive(clap::Args)]
 pub struct UpdateCommand {
@@ -22,7 +23,6 @@ impl UpdateCommand {
         {
             return Err("No fields provided to update.".into());
         }
-        println!("Updating project: {}", self.name);
 
         // Get the RPJ store path and the project
         let store_path = get_store_path();
@@ -30,24 +30,43 @@ impl UpdateCommand {
 
         // Update the project fields
         if let Some(directory) = self.directory {
-            println!("Updating directory to: {}", &directory);
-            project.directory = directory;
+            project.directory = directory.clone();
+            println!(
+                "{} Updated directory to: {}",
+                "→".blue(),
+                directory.dimmed()
+            );
         }
         if let Some(run_cmd) = self.run_cmd {
-            println!("Updating run command to: {}", &run_cmd.as_str());
-            project.run_cmd = Some(run_cmd);
+            project.run_cmd = Some(run_cmd.clone());
+            println!(
+                "{} Updated run command to: {}",
+                "→".blue(),
+                run_cmd.dimmed()
+            );
         }
         if let Some(gh_url) = self.gh_url {
-            println!("Updating GitHub URL to: {}", &gh_url);
-            project.gh_url = Some(gh_url);
+            project.gh_url = Some(gh_url.clone());
+            println!("{} Updated GitHub URL to: {}", "→".blue(), gh_url.dimmed());
         }
         if let Some(description) = self.description {
-            println!("Updating description to: {}", &description);
-            project.description = Some(description);
+            project.description = Some(description.clone());
+            println!(
+                "{} Updated description to: {}",
+                "→".blue(),
+                description.dimmed()
+            );
         }
 
         // Save the updated project back to the RPJ store
         project.save(&store_path);
+
+        println!(
+            "{} {} {}",
+            "✔ Project".green(),
+            self.name.blue(),
+            "has been updated".green()
+        );
 
         Ok(())
     }
