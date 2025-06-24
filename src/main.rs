@@ -23,6 +23,7 @@ fn main() {
         Commands::Export(cmd) => cmd.handle(),
         Commands::Add(cmd) => cmd.handle(),
         Commands::Install(cmd) => cmd.handle(),
+        Commands::List(cmd) => cmd.handle(),
     };
 
     if let Err(e) = res {
