@@ -5,7 +5,7 @@ pub struct Command {
 
 impl Command {
     pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
-        // ...
+        // ✔ ✖ → ⚠ ℹ
 
         Ok(())
     }
