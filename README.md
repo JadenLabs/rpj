@@ -47,6 +47,7 @@ This is the rust port of my [RProj tool](https://github.com/JadenLabs/rproj) mad
 -  update  | Update an existing project
 -  add     | Add an existing project
 -  export  | Export a project to a file
+-  list    | List all projects
 ```
 
 ## Contributing
