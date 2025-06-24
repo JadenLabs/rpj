@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions/setup-rust@v1
+        with:
+          rust-version: stable
+
+      - name: Install cross
+        run: cargo install cross
+
+      - name: Build Linux binary
+        run: cross build --release --target x86_64-unknown-linux-gnu
+
+      - name: Build macOS binary
+        run: cross build --release --target x86_64-apple-darwin
+
+      - name: Build Windows binary
+        run: cross build --release --target x86_64-pc-windows-gnu
+
+      - name: Upload binaries to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            target/x86_64-unknown-linux-gnu/release/rpj
+            target/x86_64-apple-darwin/release/rpj
+            target/x86_64-pc-windows-gnu/release/rpj.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
