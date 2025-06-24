@@ -15,13 +15,11 @@ impl RemoveCommand {
         println!("DEBUG: RPJ store path: {:?}", store_path);
 
         // Get the project
-        match project_exists(&store_path, &self.name, None) {
-            ProjectExistsResult::DoesNotExist => {
-                return Err(
-                    format!("Project '{}' does not exist in the RPJ store!", self.name).into(),
-                );
-            }
-            _ => {}
+        if !matches!(
+            project_exists(&store_path, &self.name, None),
+            ProjectExistsResult::ExistsByName
+        ) {
+            return Err(format!("Project '{}' does not exist in the RPJ store!", self.name).into());
         }
 
         // Load existing projects

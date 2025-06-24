@@ -34,7 +34,7 @@ impl NewCommand {
             })?
             .to_string_lossy()
             .to_string();
-        match project_exists(&store_path, &self.name.as_str(), Some(&project_path)) {
+        match project_exists(&store_path, self.name.as_str(), Some(&project_path)) {
             ProjectExistsResult::ExistsByName => {
                 return Err(
                     format!("Project '{}' already exists in the RPJ store!", self.name).into(),

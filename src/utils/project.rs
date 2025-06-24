@@ -1,7 +1,7 @@
 use dirs;
 use serde::{Deserialize, Serialize};
-use std::fs;
 use std::path::PathBuf;
+use std::{env, fs};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Project {
@@ -27,15 +27,24 @@ impl Project {
 
 /// Function to get the path to the RPJ store
 pub fn get_store_path() -> PathBuf {
-    // Get the dir for the user's local data
+    if let Ok(custom_path) = env::var("RPJ_STORE_PATH") {
+        let path = PathBuf::from(custom_path);
+        fs::create_dir_all(path.parent().unwrap())
+            .expect("Failed to create directory for custom projects.json");
+
+        if !path.exists() {
+            fs::write(&path, "[]").expect("Failed to create custom projects.json file");
+        }
+
+        return path;
+    }
+
     let dir = dirs::data_local_dir().expect("Failed to get local data directory");
-    // Make the path to the RPJ store
     let path = dir.join("rpj").join("projects.json");
-    // Create the directory if it doesn't exist
+
     fs::create_dir_all(path.parent().unwrap())
         .expect("Failed to create directory for projects.json");
 
-    // Make sure the file exists
     if !path.exists() {
         fs::write(&path, "[]").expect("Failed to create projects.json file");
     }
@@ -91,7 +100,10 @@ pub fn project_exists(
 }
 
 /// Get project by name from the store
-pub fn get_project_by_name(path: &PathBuf, project_name: &str) -> Result<Project, Box<dyn std::error::Error>> {
+pub fn get_project_by_name(
+    path: &PathBuf,
+    project_name: &str,
+) -> Result<Project, Box<dyn std::error::Error>> {
     let projects = load_projects(path);
     let res = projects.into_iter().find(|p| p.name == project_name);
 

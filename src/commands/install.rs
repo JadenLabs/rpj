@@ -1,6 +1,10 @@
 use colored::Colorize;
 use dirs;
-use std::{fs, path::PathBuf, process::Command};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 const PROJ_NAME: &str = "rpj";
 
@@ -60,7 +64,7 @@ impl InstallCommand {
     }
 }
 
-fn add_to_path_windows(dir: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+fn add_to_path_windows(dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
     let dir_str = dir.to_string_lossy();
     let output = Command::new("powershell")
         .args([

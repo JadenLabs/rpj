@@ -9,8 +9,8 @@ use colored::Colorize;
 fn main() {
     // catch the cli parsing if it fails
     if let Err(e) = Cli::try_parse() {
-        eprintln!("{}\n{}", e, "✖ Command parsing failed".red());
-        return;
+        eprintln!("{}", e);
+        std::process::exit(1);
     }
 
     let cli = Cli::parse();
@@ -30,5 +30,6 @@ fn main() {
 
     if let Err(e) = res {
         eprintln!("{} {}", "✖".red(), e);
+        std::process::exit(1);
     }
 }

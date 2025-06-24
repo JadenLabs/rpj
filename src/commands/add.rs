@@ -51,7 +51,7 @@ impl AddCommand {
 
             for entry in entries.flatten() {
                 let file_path = entry.path();
-                if file_path.extension().map_or(false, |ext| ext == "rpj") {
+                if file_path.extension().is_some_and(|ext| ext == "rpj") {
                     println!(
                         "{} Found .rpj file: {}",
                         "ℹ".blue(),
@@ -62,9 +62,8 @@ impl AddCommand {
                 }
             }
 
-            path = found_path.ok_or_else(|| {
-                format!("No .rpj file found in directory {}", self.path.to_string())
-            })?;
+            path = found_path
+                .ok_or_else(|| format!("No .rpj file found in directory {}", self.path))?;
         }
 
         // Read the .rpj file
@@ -81,22 +80,20 @@ impl AddCommand {
 
         // Get store path and check if project exists
         let store_path = get_store_path();
-        match project_exists(&store_path, &project.name, None) {
-            ProjectExistsResult::ExistsByName => {
-                if self.force {
-                    let mut projects = load_projects(&store_path);
-                    projects.retain(|p| p.name != project.name);
-                    save_projects(&store_path, &projects);
-                } else {
-                    return Err(format!(
-                        "Project {} already exists! Use {} to overwrite it.",
-                        project.name.blue(),
-                        "--force".green(),
-                    )
-                    .into());
-                }
+        if let ProjectExistsResult::ExistsByName = project_exists(&store_path, &project.name, None)
+        {
+            if self.force {
+                let mut projects = load_projects(&store_path);
+                projects.retain(|p| p.name != project.name);
+                save_projects(&store_path, &projects);
+            } else {
+                return Err(format!(
+                    "Project {} already exists! Use {} to overwrite it.",
+                    project.name.blue(),
+                    "--force".green(),
+                )
+                .into());
             }
-            _ => {}
         }
 
         // Load projects
