@@ -27,3 +27,6 @@ pub use get::GetCommand;
 
 pub mod code;
 pub use code::CodeCommand;
+
+pub mod run;
+pub use run::RunCommand;
