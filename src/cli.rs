@@ -37,8 +37,8 @@ pub enum Commands {
     #[command(aliases = &["vsc", "edit"], about = "Open project in VS Code")]
     Code(CodeCommand),
 
-    // #[command(aliases = &["r", "execute", "exec", "start"], about = "Run a project")]
-    // Run(RunCommand),
+    #[command(aliases = &["r", "execute", "exec", "start"], about = "Run a project")]
+    Run(RunCommand),
 
     // #[command(aliases = &["open-dir", "file", "explore", "open"], about = "Open project in file explorer")]
     // Explorer(ExplorerCommand),
