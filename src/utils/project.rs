@@ -26,7 +26,7 @@ impl Project {
 }
 
 /// Normalize a path by removing the "\\?\" prefix if it exists
-fn normalize_path(path: &PathBuf) -> Result<PathBuf, Box<dyn std::error::Error>> {
+pub fn normalize_path(path: &PathBuf) -> Result<PathBuf, Box<dyn std::error::Error>> {
     let canonical = fs::canonicalize(path)?;
     if let Some(stripped) = canonical.to_str().and_then(|s| s.strip_prefix(r"\\?\")) {
         Ok(PathBuf::from(stripped))
