@@ -14,10 +14,11 @@ impl CodeCommand {
         let project = get_project_by_name(&store_path, &self.name)?;
 
         println!(
-            "{} Opening project '{}' in VS Code... ({})",
-            "ℹ".blue(),
-            project.name.bold(),
-            &project.directory.dimmed()
+            "{} {} {} ({})",
+            "ℹ Opening project".blue(),
+            project.name.bold().blue(),
+            "in VS Code...".blue(),
+            &project.directory.dimmed(),
         );
 
         launch_vscode(&project.directory)?;
