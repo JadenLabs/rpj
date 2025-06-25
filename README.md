@@ -12,7 +12,7 @@ This is the rust port of my [RProj tool](https://github.com/JadenLabs/rproj) mad
 -   Keep track of your projects
 -   Open projects quickly in VSC or file explorer (todo) - just type the name
 -   Open a terminal for your project fast (todo)
--   Run code for your projects easily (todo)
+-   Run code for your projects easily
 
 ## Installation
 
