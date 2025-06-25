@@ -1,3 +1,4 @@
+use colored::Colorize;
 use dirs;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -25,9 +26,15 @@ impl Project {
     }
 }
 
-/// Normalize a path by removing the "\\?\" prefix if it exists
+/// Normalize a path by removing the "\\\\?\\" prefix if it exists
 pub fn normalize_path(path: &PathBuf) -> Result<PathBuf, Box<dyn std::error::Error>> {
-    let canonical = fs::canonicalize(path)?;
+    let canonical = fs::canonicalize(path).map_err(|e| {
+        format!(
+            "Failed to canonicalize path {}: {}",
+            path.to_string_lossy().dimmed(),
+            e.to_string().red()
+        )
+    })?;
     if let Some(stripped) = canonical.to_str().and_then(|s| s.strip_prefix(r"\\?\")) {
         Ok(PathBuf::from(stripped))
     } else {
@@ -93,10 +100,9 @@ pub fn project_exists(
     }
 
     if let Some(proj_path) = project_path {
-        if projects
-            .iter()
-            .any(|p| fs::canonicalize(&p.directory).ok() == fs::canonicalize(proj_path).ok())
-        {
+        if projects.iter().any(|p| {
+            normalize_path(&PathBuf::from(&p.directory)).ok() == normalize_path(proj_path).ok()
+        }) {
             return ProjectExistsResult::ExistsByDirectory;
         };
     }

@@ -1,5 +1,6 @@
 use crate::utils::{
-    Project, ProjectExistsResult, get_store_path, load_projects, project_exists, save_projects,
+    Project, ProjectExistsResult, get_store_path, load_projects, normalize_path, project_exists,
+    save_projects,
 };
 use colored::Colorize;
 use std::fs;
@@ -21,13 +22,7 @@ pub struct AddCommand {
 impl AddCommand {
     pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         // Parse the path to the .rpj file
-        let mut path = PathBuf::from(&self.path).canonicalize().map_err(|e| {
-            format!(
-                "Failed to parse path {}: {}",
-                self.path.to_string().dimmed(),
-                e.to_string().red()
-            )
-        })?;
+        let mut path = normalize_path(&PathBuf::from(&self.path))?;
 
         if !path.exists() {
             return Err(format!(
