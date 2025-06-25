@@ -51,7 +51,7 @@ pub enum Commands {
     // #[command(aliases = &["ter", "shell", "term", "sh", "cmd"], about = "Open a project in the terminal")]
     // Terminal(TerminalCommand),
 
-    // #[command(aliases = &["tree", "structure"], about = "Show the project structure")]
+    // #[command(aliases = &["structure"], about = "Show the project structure")]
     // Tree(TreeCommand),
 
     // #[command(aliases = &["label"], about = "Manage tags for a project")]
