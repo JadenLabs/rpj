@@ -10,7 +10,7 @@ pub struct CodeCommand {
 
 impl CodeCommand {
     pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
-        let store_path = get_store_path();
+        let store_path = get_store_path()?;
         let project = get_project_by_name(&store_path, &self.name)?;
 
         println!(

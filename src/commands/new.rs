@@ -1,5 +1,6 @@
 use crate::utils::{
-    Project, ProjectExistsResult, get_store_path, load_projects, project_exists, save_projects,
+    Project, ProjectExistsResult, get_store_path, load_projects, normalize_path, project_exists,
+    save_projects,
 };
 use colored::Colorize;
 use std::path::PathBuf;
@@ -19,21 +20,10 @@ pub struct NewCommand {
 impl NewCommand {
     pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         // Get the RPJ store path
-        let store_path = get_store_path();
+        let store_path = get_store_path()?;
 
         // Check if the project already exists in the RPJ store
-        let project_path = PathBuf::from(&self.directory);
-        let project_canon_path = project_path
-            .canonicalize()
-            .map_err(|e| {
-                format!(
-                    "Failed to parse path '{}': {}",
-                    &self.directory,
-                    e.to_string().dimmed()
-                )
-            })?
-            .to_string_lossy()
-            .to_string();
+        let project_path = normalize_path(&PathBuf::from(&self.directory))?;
         match project_exists(&store_path, self.name.as_str(), Some(&project_path)) {
             ProjectExistsResult::ExistsByName => {
                 return Err(
@@ -53,7 +43,7 @@ impl NewCommand {
         // Create a new project instance
         let project = Project {
             name: self.name.clone(),
-            directory: project_canon_path,
+            directory: project_path.to_string_lossy().to_string(),
             run_cmd: self.run_cmd,
             gh_url: self.gh_url,
             description: self.description,
