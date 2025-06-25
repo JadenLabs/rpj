@@ -30,6 +30,15 @@ impl RunCommand {
             }
         });
 
+        println!(
+            "{} {} {}{}{}\n",
+            "ℹ Running".blue(),
+            &self.name.blue().bold(),
+            "using the '".blue(),
+            &terminal.blue().bold(),
+            "' terminal.".blue()
+        );
+
         if cfg!(target_os = "windows") {
             run_terminal_on_windows(&project.directory, &terminal, run_cmd)?;
         } else {
