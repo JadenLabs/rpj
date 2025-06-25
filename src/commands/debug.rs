@@ -9,7 +9,7 @@ pub struct DebugCommand {
 impl DebugCommand {
     pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         // Get the RPJ store path
-        let store_path = get_store_path();
+        let store_path = get_store_path()?;
         println!(
             "{} RPJ Store Path: {}",
             "ℹ".blue(),

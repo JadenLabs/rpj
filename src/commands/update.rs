@@ -25,7 +25,7 @@ impl UpdateCommand {
         }
 
         // Get the RPJ store path and the project
-        let store_path = get_store_path();
+        let store_path = get_store_path()?;
         let mut project = get_project_by_name(&store_path, &self.name)?;
 
         // Update the project fields

@@ -19,7 +19,7 @@ pub struct NewCommand {
 impl NewCommand {
     pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         // Get the RPJ store path
-        let store_path = get_store_path();
+        let store_path = get_store_path()?;
 
         // Check if the project already exists in the RPJ store
         let project_path = PathBuf::from(&self.directory);

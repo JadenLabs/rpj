@@ -79,7 +79,7 @@ impl AddCommand {
             .to_string();
 
         // Get store path and check if project exists
-        let store_path = get_store_path();
+        let store_path = get_store_path()?;
         if let ProjectExistsResult::ExistsByName = project_exists(&store_path, &project.name, None)
         {
             if self.force {
