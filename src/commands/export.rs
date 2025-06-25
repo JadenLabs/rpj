@@ -17,7 +17,7 @@ pub struct ExportCommand {
 impl ExportCommand {
     pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         // Get the RPJ store path
-        let store_path = get_store_path();
+        let store_path = get_store_path()?;
 
         // Get the project
         let mut project = get_project_by_name(&store_path, &self.name)?;

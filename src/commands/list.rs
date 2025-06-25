@@ -6,7 +6,7 @@ pub struct ListCommand {}
 
 impl ListCommand {
     pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
-        let store_path = get_store_path();
+        let store_path = get_store_path()?;
         let projects = load_projects(&store_path);
 
         if projects.is_empty() {

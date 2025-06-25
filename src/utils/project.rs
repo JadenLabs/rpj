@@ -1,3 +1,4 @@
+use colored::Colorize;
 use dirs;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -25,31 +26,42 @@ impl Project {
     }
 }
 
-/// Function to get the path to the RPJ store
-pub fn get_store_path() -> PathBuf {
-    if let Ok(custom_path) = env::var("RPJ_STORE_PATH") {
-        let path = PathBuf::from(custom_path);
-        fs::create_dir_all(path.parent().unwrap())
-            .expect("Failed to create directory for custom projects.json");
-
-        if !path.exists() {
-            fs::write(&path, "[]").expect("Failed to create custom projects.json file");
-        }
-
-        return path;
+/// Normalize a path by removing the "\\\\?\\" prefix if it exists
+pub fn normalize_path(path: &PathBuf) -> Result<PathBuf, Box<dyn std::error::Error>> {
+    let canonical = fs::canonicalize(path).map_err(|e| {
+        format!(
+            "Failed to canonicalize path {}: {}",
+            path.to_string_lossy().dimmed(),
+            e.to_string().red()
+        )
+    })?;
+    if let Some(stripped) = canonical.to_str().and_then(|s| s.strip_prefix(r"\\?\")) {
+        Ok(PathBuf::from(stripped))
+    } else {
+        Ok(canonical)
     }
+}
 
-    let dir = dirs::data_local_dir().expect("Failed to get local data directory");
-    let path = dir.join("rpj").join("projects.json");
+/// Function to get the path to the RPJ store
+pub fn get_store_path() -> Result<PathBuf, Box<dyn std::error::Error>> {
+    let path = if let Ok(custom) = env::var("RPJ_STORE_PATH") {
+        PathBuf::from(custom)
+    } else {
+        dirs::data_local_dir()
+            .ok_or("Failed to get local data directory")?
+            .join("rpj")
+            .join("projects.json")
+    };
 
-    fs::create_dir_all(path.parent().unwrap())
-        .expect("Failed to create directory for projects.json");
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)?;
+    }
 
     if !path.exists() {
-        fs::write(&path, "[]").expect("Failed to create projects.json file");
+        fs::write(&path, "[]")?;
     }
 
-    path
+    normalize_path(&path)
 }
 
 /// Function to load projects from the RPJ store
@@ -88,10 +100,9 @@ pub fn project_exists(
     }
 
     if let Some(proj_path) = project_path {
-        if projects
-            .iter()
-            .any(|p| fs::canonicalize(&p.directory).ok() == fs::canonicalize(proj_path).ok())
-        {
+        if projects.iter().any(|p| {
+            normalize_path(&PathBuf::from(&p.directory)).ok() == normalize_path(proj_path).ok()
+        }) {
             return ProjectExistsResult::ExistsByDirectory;
         };
     }
