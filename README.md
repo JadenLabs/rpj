@@ -28,7 +28,9 @@ This is the rust port of my [RProj tool](https://github.com/JadenLabs/rproj) mad
     cargo install rpj
     ```
 
-#### With cli
+#### With cli (not recommended)
+
+Auto-PATHing only works on Windows at the moment
 
 1. Clone the project
     ```bash
@@ -44,7 +46,7 @@ This is the rust port of my [RProj tool](https://github.com/JadenLabs/rproj) mad
 **Commands:**
 
 ```
--  install | Install a project to the system bins
+-  install | Install a project (not needed if using cargo)
 -  new     | Create a new project
 -  remove  | Delete an existing project
 -  update  | Update an existing project
@@ -53,6 +55,7 @@ This is the rust port of my [RProj tool](https://github.com/JadenLabs/rproj) mad
 -  list    | List all projects
 -  get     | Get a project by name
 -  code    | Open a project in VS Code
+-  run     | Run a project using the run_cmd field
 ```
 
 ## Contributing
