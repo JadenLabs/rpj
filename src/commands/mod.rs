@@ -30,3 +30,6 @@ pub use code::CodeCommand;
 
 pub mod run;
 pub use run::RunCommand;
+
+pub mod explore;
+pub use explore::ExploreCommand;

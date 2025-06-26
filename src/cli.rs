@@ -40,8 +40,8 @@ pub enum Commands {
     #[command(aliases = &["r", "execute", "exec", "start"], about = "Run a project")]
     Run(RunCommand),
 
-    // #[command(aliases = &["open-dir", "file", "explore", "open"], about = "Open project in file explorer")]
-    // Explorer(ExplorerCommand),
+    #[command(aliases = &["open-dir", "file", "explorer", "open"], about = "Open project in file explorer")]
+    Explore(ExploreCommand),
 
     Debug(DebugCommand),
 
