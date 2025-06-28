@@ -12,9 +12,13 @@ impl ListCommand {
         if projects.is_empty() {
             return Err("No projects found.".into());
         } else {
-            println!("{}", "Projects:".bold().underline());
+            println!("{}", "Projects:".bold().green());
             for project in projects {
-                println!("→ {} ({})", project.name.blue(), project.directory.dimmed());
+                println!(
+                    "→ {} {}",
+                    project.name.bright_cyan().bold(),
+                    format!("({})", project.directory).dimmed()
+                );
             }
         }
 
