@@ -33,3 +33,6 @@ pub use run::RunCommand;
 
 pub mod explore;
 pub use explore::ExploreCommand;
+
+pub mod path;
+pub use path::PathCommand;

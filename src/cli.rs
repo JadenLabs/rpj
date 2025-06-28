@@ -89,9 +89,10 @@ pub enum Commands {
 
     #[command(about = "Debug internal state")]
     Debug(DebugCommand),
+
+    #[command(about = "Get the path of a project")]
+    Path(PathCommand),
     // Future:
-    // #[command(about = "Get the path of a project")]
-    // Path(PathCommand),
     // #[command(aliases = &["ter", "shell", "term", "sh", "cmd"], about = "Open a project in the terminal")]
     // Terminal(TerminalCommand),
     // #[command(aliases = &["structure"], about = "Show the project structure")]

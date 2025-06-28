@@ -22,6 +22,7 @@ fn main() {
         Commands::Code(cmd) => cmd.handle(),
         Commands::Run(cmd) => cmd.handle(),
         Commands::Explore(cmd) => cmd.handle(),
+        Commands::Path(cmd) => cmd.handle(),
     };
 
     if let Err(e) = res {
