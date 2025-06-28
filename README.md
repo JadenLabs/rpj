@@ -56,6 +56,7 @@ Auto-PATHing only works on Windows at the moment
 -  code    | Open a project in VS Code
 -  run     | Run a project using the run_cmd field
 -  explore | Open project in file explorer
+-  path    | Get the path of a project
 ```
 
 ## Contributing
