@@ -10,7 +10,7 @@ This is the rust port of my [RProj tool](https://github.com/JadenLabs/rproj) mad
 ## Features
 
 -   Keep track of your projects
--   Open projects quickly in VSC or file explorer (todo) - just type the name
+-   Open projects quickly in VSC or file explorer - just type the name
 -   Open a terminal for your project fast (todo)
 -   Run code for your projects easily
 
@@ -56,6 +56,7 @@ Auto-PATHing only works on Windows at the moment
 -  get     | Get a project by name
 -  code    | Open a project in VS Code
 -  run     | Run a project using the run_cmd field
+-  explore | Open project in file explorer
 ```
 
 ## Contributing
