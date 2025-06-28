@@ -100,6 +100,8 @@ pub enum Commands {
     // Tag(TagCommand),
     // #[command(aliases = &["n", "comment"], about = "Add a note to a project")]
     // Note(NoteCommand),
+    // #[command(aliases = &["bk", "bkmk"], about = "Use bookmarks to quickly navigate directories")]
+    // Bookmark(BookmarkCommand)
 }
 
 pub fn get_styles() -> builder::Styles {
