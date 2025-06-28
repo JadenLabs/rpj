@@ -57,7 +57,13 @@ fn test_help_command() {
         .unwrap()
         .arg("--help")
         .assert()
-        .failure();
+        .success();
+
+    Command::cargo_bin("rpj")
+        .unwrap()
+        .arg("help")
+        .assert()
+        .success();
 }
 
 #[test]
