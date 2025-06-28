@@ -1,6 +1,6 @@
 [package]
 name = "rpj"
-version = "0.8.0"
+version = "0.9.0"
 edition = "2024"
 authors = ["JadenLabs <jadenlabssocial@outlook.com>"]
 description = "A project management CLI tool for quick manipulation of projects"
