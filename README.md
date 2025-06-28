@@ -46,7 +46,6 @@ Auto-PATHing only works on Windows at the moment
 **Commands:**
 
 ```
--  install | Install a project (not needed if using cargo)
 -  new     | Create a new project
 -  remove  | Delete an existing project
 -  update  | Update an existing project
