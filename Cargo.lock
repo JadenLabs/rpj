@@ -308,6 +308,7 @@ checksum = "809e8dc61f6de73b46c85f4c96486310fe304c434cfa43669d7b40f711150908"
 name = "rpj"
 version = "0.9.0"
 dependencies = [
+ "anstyle",
  "assert_cmd",
  "clap",
  "colored",
