@@ -4,6 +4,8 @@ use colored::Colorize;
 #[derive(clap::Args)]
 pub struct UpdateCommand {
     pub name: String,
+    #[arg(long, help = "New name for the project")]
+    pub new_name: Option<String>,
     #[arg(long, help = "Directory of the project")]
     pub directory: Option<String>,
     #[arg(long, help = "Command to run the project")]

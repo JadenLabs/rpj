@@ -1,6 +1,7 @@
-use crate::utils::{get_project_by_name, get_store_path};
+use crate::utils::{
+    get_project_by_name, get_store_path, run_terminal,
+};
 use colored::Colorize;
-use std::process::Command;
 
 #[derive(clap::Args)]
 pub struct RunCommand {
@@ -22,14 +23,6 @@ impl RunCommand {
             )
         })?;
 
-        let terminal = self.terminal.unwrap_or_else(|| {
-            if cfg!(target_os = "windows") {
-                "powershell".to_string()
-            } else {
-                "bash".to_string()
-            }
-        });
-
         println!(
             "{} {} {}{}{}\n",
             "ℹ Running".blue(),
@@ -39,66 +32,8 @@ impl RunCommand {
             "' terminal.".blue()
         );
 
-        if cfg!(target_os = "windows") {
-            run_terminal_on_windows(&project.directory, &terminal, run_cmd)?;
-        } else {
-            run_terminal_on_unix(&project.directory, &terminal, run_cmd)?;
-        }
+        run_terminal(&project.directory, &self.terminal, &run_cmd)?;
 
         Ok(())
     }
-}
-
-fn run_terminal_on_windows(
-    directory: &str,
-    terminal: &str,
-    command: &str,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let lower = terminal.to_lowercase();
-    let mut cmd;
-
-    match lower.as_str() {
-        "cmd" => {
-            cmd = Command::new("cmd");
-            cmd.args(["/C", &format!("cd /d {} && {}", directory, command)]);
-        }
-        "powershell" | "ps" => {
-            cmd = Command::new("powershell");
-            cmd.args(["-Command", &format!("cd '{}'; {}", directory, command)]);
-        }
-        "pwsh" => {
-            cmd = Command::new("pwsh");
-            cmd.args(["-Command", &format!("cd '{}'; {}", directory, command)]);
-        }
-        other => {
-            return Err(format!("Unsupported terminal on Windows: {}", other).into());
-        }
-    }
-
-    cmd.spawn()?.wait()?;
-    Ok(())
-}
-
-fn run_terminal_on_unix(
-    directory: &str,
-    terminal: &str,
-    command: &str,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let shell_cmd = format!("cd '{}' && {}", directory, command);
-    let mut cmd = Command::new(terminal);
-
-    match terminal {
-        "bash" | "sh" | "zsh" => {
-            cmd.args(["-c", &shell_cmd]);
-        }
-        "gnome-terminal" => {
-            cmd.args(["--", "bash", "-c", &shell_cmd]);
-        }
-        other => {
-            return Err(format!("Unsupported terminal on Unix: {}", other).into());
-        }
-    }
-
-    cmd.spawn()?.wait()?;
-    Ok(())
 }
