@@ -25,7 +25,7 @@ impl InstallCommand {
 
         // Find exec name and target path
         let exe_name = if cfg!(windows) {
-            format!("{}.exe", PROJ_NAME)
+            format!("{PROJ_NAME}.exe")
         } else {
             PROJ_NAME.to_string()
         };
@@ -70,8 +70,7 @@ fn add_to_path_windows(dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
         .args([
             "-Command",
             &format!(
-                "[Environment]::SetEnvironmentVariable('Path', $env:Path + ';{}', 'User')",
-                dir_str
+                "[Environment]::SetEnvironmentVariable('Path', $env:Path + ';{dir_str}', 'User')"
             ),
         ])
         .output()

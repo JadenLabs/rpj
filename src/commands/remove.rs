@@ -12,7 +12,7 @@ impl RemoveCommand {
     pub fn handle(self) -> Result<(), Box<dyn std::error::Error>> {
         // Get the RPJ store path
         let store_path = get_store_path()?;
-        println!("DEBUG: RPJ store path: {:?}", store_path);
+        println!("DEBUG: RPJ store path: {store_path:?}");
 
         // Get the project
         if !matches!(

@@ -93,9 +93,12 @@ pub enum Commands {
     #[command(about = "Get the path of a project")]
     Path(PathCommand),
     // Future:
-    // #[command(aliases = &["ter", "shell", "term", "sh", "cmd"], about = "Open a project in the terminal")]
-    // Terminal(TerminalCommand),
-    // #[command(aliases = &["structure"], about = "Show the project structure")]
+    #[command(
+        aliases = &["ter", "shell", "term", "sh", "cmd"],
+        about = format!("Open a project in the terminal {}", "(ter, shell, term, sh, cmd)".dimmed()))
+    ]
+    Terminal(TerminalCommand),
+    // #[command(aliases = &["structure", "tree"], about = "Show the project structure")]
     // Tree(TreeCommand),
     // #[command(aliases = &["label"], about = "Manage tags for a project")]
     // Tag(TagCommand),

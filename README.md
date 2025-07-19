@@ -46,17 +46,19 @@ Auto-PATHing only works on Windows at the moment
 **Commands:**
 
 ```
--  new     | Create a new project
--  remove  | Delete an existing project
--  update  | Update an existing project
--  add     | Add an existing project
--  export  | Export a project to a file
--  list    | List all projects
--  get     | Get a project by name
--  code    | Open a project in VS Code
--  run     | Run a project using the run_cmd field
--  explore | Open project in file explorer
--  path    | Get the path of a project
+-  add      | Add an existing project
+-  new      | Create a new project
+-  export   | Export a project to a file
+-  list     | List all projects
+-  get      | Get a project by name
+-  code     | Open a project in VS Code
+-  run      | Run a project using the run_cmd field
+-  update   | Update an existing project
+-  remove   | Delete an existing project
+-  explore  | Open project in file explorer
+-  path     | Get the path of a project
+-  terminal | Open your project in the terminal
+-  help     | Display RPJ usage instructions
 ```
 
 ## Contributing

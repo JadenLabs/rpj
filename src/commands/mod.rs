@@ -36,3 +36,6 @@ pub use explore::ExploreCommand;
 
 pub mod path;
 pub use path::PathCommand;
+
+pub mod terminal;
+pub use terminal::TerminalCommand;
