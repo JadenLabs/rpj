@@ -23,16 +23,18 @@ impl RunCommand {
             )
         })?;
 
+        let ter_str = &self.terminal.clone().unwrap_or("default".into());
+
         println!(
             "{} {} {}{}{}\n",
             "ℹ Running".blue(),
             &self.name.blue().bold(),
             "using the '".blue(),
-            &terminal.blue().bold(),
+            ter_str.blue().bold(),
             "' terminal.".blue()
         );
 
-        run_terminal(&project.directory, &self.terminal, &run_cmd)?;
+        run_terminal(&project.directory, self.terminal.as_ref(), Some(&run_cmd.to_string()))?;
 
         Ok(())
     }
