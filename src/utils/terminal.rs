@@ -17,9 +17,9 @@ pub fn run_terminal(
     let terminal: &String = terminal.unwrap_or(&default_terminal);
 
     if cfg!(target_os = "windows") {
-        run_terminal_on_windows(directory, &terminal, command)?;
+        run_terminal_on_windows(directory, terminal, command)?;
     } else {
-        run_terminal_on_unix(directory, &terminal, command)?;
+        run_terminal_on_unix(directory, terminal, command)?;
     };
 
     Ok(())
@@ -27,7 +27,7 @@ pub fn run_terminal(
 
 pub fn run_terminal_on_windows(
     directory: &String,
-    terminal: &String,
+    terminal: &str,
     command: Option<&String>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let terminal = terminal.to_lowercase();
