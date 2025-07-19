@@ -33,14 +33,14 @@ fn launch_vscode(dir: &str) -> Result<(), Box<dyn std::error::Error>> {
         .args(["/C", "code", dir])
         .spawn()
         .map(|_| ())
-        .map_err(|e| format!("Failed to open VS Code: {}", e).into())
+        .map_err(|e| format!("Failed to open VS Code: {e}").into())
 }
 
 #[cfg(not(target_os = "windows"))]
 fn launch_vscode(dir: &str) -> Result<(), Box<dyn std::error::Error>> {
     Command::new("sh")
-        .args(["-c", &format!("code {}", dir)])
+        .args(["-c", &format!("code {dir}")])
         .spawn()
         .map(|_| ())
-        .map_err(|e| format!("Failed to open VS Code: {}", e).into())
+        .map_err(|e| format!("Failed to open VS Code: {e}").into())
 }

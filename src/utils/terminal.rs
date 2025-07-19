@@ -37,29 +37,29 @@ pub fn run_terminal_on_windows(
         "cmd" => {
             cmd = Command::new("cmd");
             if let Some(cmd_str) = command {
-                cmd.args(["/C", &format!("cd /d {} && {}", directory, cmd_str)]);
+                cmd.args(["/C", &format!("cd /d {directory} && {cmd_str}")]);
             } else {
-                cmd.args(["/K", &format!("cd /d {}", directory)]);
+                cmd.args(["/K", &format!("cd /d {directory}")]);
             }
         }
         "powershell" | "ps" => {
             cmd = Command::new("powershell");
             if let Some(cmd_str) = command {
-                cmd.args(["-Command", &format!("cd '{}'; {}", directory, cmd_str)]);
+                cmd.args(["-Command", &format!("cd '{directory}'; {cmd_str}")]);
             } else {
-                cmd.args(["-NoExit", "-Command", &format!("cd '{}'", directory)]);
+                cmd.args(["-NoExit", "-Command", &format!("cd '{directory}'")]);
             }
         }
         "pwsh" => {
             cmd = Command::new("pwsh");
             if let Some(cmd_str) = command {
-                cmd.args(["-Command", &format!("cd '{}'; {}", directory, cmd_str)]);
+                cmd.args(["-Command", &format!("cd '{directory}'; {cmd_str}")]);
             } else {
-                cmd.args(["-NoExit", "-Command", &format!("cd '{}'", directory)]);
+                cmd.args(["-NoExit", "-Command", &format!("cd '{directory}'")]);
             }
         }
-        other => {
-            return Err(format!("Unsupported terminal on Windows: {}", other).into());
+        _ => {
+            return Err(format!("Unsupported terminal on Windows: {terminal}").into());
         }
     }
 
@@ -74,7 +74,7 @@ pub fn run_terminal_on_unix(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let shell_command = match command {
         Some(cmd_str) => format!("cd '{}' && {}", directory, cmd_str),
-        None => format!("cd '{}'", directory),
+        None => format!("cd '{directory}'"),
     };
     let mut cmd = Command::new(terminal);
 
@@ -85,8 +85,8 @@ pub fn run_terminal_on_unix(
         "gnome-terminal" => {
             cmd.args(["--", "bash", "-c", &shell_command]);
         }
-        other => {
-            return Err(format!("Unsupported terminal on Unix: {}", other).into());
+        _ => {
+            return Err(format!("Unsupported terminal on Unix: {terminal}").into());
         }
     }
 

@@ -120,6 +120,6 @@ pub fn get_project_by_name(
 
     match res {
         Some(project) => Ok(project),
-        None => Err(format!("Project '{}' not found", project_name).into()),
+        None => Err(format!("Project '{project_name}' not found").into()),
     }
 }
