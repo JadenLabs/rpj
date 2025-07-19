@@ -73,7 +73,7 @@ pub fn run_terminal_on_unix(
     command: Option<&String>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let shell_command = match command {
-        Some(cmd_str) => format!("cd '{}' && {}", directory, cmd_str),
+        Some(cmd_str) => format!("cd '{directory}' && {cmd_str}"),
         None => format!("cd '{directory}'"),
     };
     let mut cmd = Command::new(terminal);
